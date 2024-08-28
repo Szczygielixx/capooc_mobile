@@ -15,7 +15,18 @@ import com.example.capoocmobile.view_models.MainViewModel
 
 @Composable
 fun MainView(navController: NavController, viewModel: MainViewModel) {
-    Column (modifier = Modifier.fillMaxSize()) {
-        Text(text = "Select the device to connect to:", modifier = Modifier.padding(32.dp).align(Alignment.CenterHorizontally), fontSize = 24.sp)
-        BluetoothDevicesList(devices = viewModel.devices)
-    }}
+    Column(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = "Choose the device to connect to:",
+            modifier = Modifier.padding(32.dp).align(Alignment.CenterHorizontally),
+            fontSize = 24.sp
+        )
+        BluetoothDevicesList(
+            devices = viewModel.devices,
+            onDeviceClick = { device ->
+                viewModel.selectDevice(device)
+                navController.navigate("details")
+            }
+        )
+    }
+}

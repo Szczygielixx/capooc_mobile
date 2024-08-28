@@ -1,5 +1,6 @@
 package com.example.capoocmobile.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,13 +13,17 @@ import androidx.compose.ui.unit.dp
 import com.example.capoocmobile.models.BluetoothDevice
 
 @Composable
-fun BluetoothDevicesList(devices: List<BluetoothDevice>) {
+fun BluetoothDevicesList(
+    devices: List<BluetoothDevice>,
+    onDeviceClick: (BluetoothDevice) -> Unit
+) {
     LazyColumn {
         items(devices) { device ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
+                    .clickable { onDeviceClick(device) }
             ) {
                 Text(
                     text = device.name,
