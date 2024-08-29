@@ -2,7 +2,6 @@ package com.example.capoocmobile.view_models
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.asStateFlow
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -12,35 +11,41 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = BluetoothRepository(application)
 
-    val devices: StateFlow<List<BluetoothDevice>> = repository.devices
+    private val _devices = MutableStateFlow<List<BluetoothDevice>>(emptyList())
+    val devices: StateFlow<List<BluetoothDevice>> = _devices
 
     private val _selectedDevice = MutableStateFlow<BluetoothDevice?>(null)
-    val selectedDevice: StateFlow<BluetoothDevice?> = _selectedDevice.asStateFlow()
+    val selectedDevice: StateFlow<BluetoothDevice?> = _selectedDevice
 
     private val _isScanning = MutableStateFlow(false)
-    val isScanning: StateFlow<Boolean> = _isScanning.asStateFlow()
+    val isScanning: StateFlow<Boolean> = _isScanning
 
     init {
-        devices.onEach { deviceList ->
-            Log.d("MainViewModel", "Devices updated. Count: ${deviceList.size}")
+        repository.devices.onEach { deviceList ->
+            Timber.tag("MainViewModel").d("Devices updated. Count: %s", deviceList.size)
+            deviceList.forEach { device ->
+                Log.d("MainViewModel", "Device: ${device.name} (${device.address})")
+            }
+            _devices.value = deviceList
         }.launchIn(viewModelScope)
     }
 
     fun startScan() {
         viewModelScope.launch {
-            repository.startScanning()
             _isScanning.value = true
+            repository.startScanning()
         }
     }
 
     fun stopScan() {
         viewModelScope.launch {
-            repository.stopScanning()
             _isScanning.value = false
+            repository.stopScanning()
         }
     }
 

@@ -27,7 +27,7 @@ fun BluetoothDevicesList(
                     .clickable { onDeviceClick(device) }
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = device.name)
+                    Text(text = "Name: ${device.name}")
                     Text(text = "Address: ${device.address}")
                     Text(text = "RSSI: ${device.rssi} dBm")
                 }
