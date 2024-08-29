@@ -1,6 +1,7 @@
 package com.example.capoocmobile.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,10 +26,11 @@ fun BluetoothDevicesList(
                     .padding(8.dp)
                     .clickable { onDeviceClick(device) }
             ) {
-                Text(
-                    text = device.name,
-                    modifier = Modifier.padding(16.dp)
-                )
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(text = device.name)
+                    Text(text = "Address: ${device.address}")
+                    Text(text = "RSSI: ${device.rssi} dBm")
+                }
             }
         }
     }

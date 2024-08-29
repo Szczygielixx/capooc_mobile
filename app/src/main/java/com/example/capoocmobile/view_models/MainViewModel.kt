@@ -1,24 +1,59 @@
 package com.example.capoocmobile.view_models
 
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.asStateFlow
+import android.app.Application
+import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import com.example.capoocmobile.models.BluetoothDevice
 import com.example.capoocmobile.models.BluetoothRepository
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
-class MainViewModel : ViewModel() {
-    private val repository = BluetoothRepository()
+class MainViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository = BluetoothRepository(application)
 
-    val devices: List<BluetoothDevice> = repository.getSampleDevices()
-    var selectedDevice: BluetoothDevice? by mutableStateOf(null)
-        private set
+    val devices: StateFlow<List<BluetoothDevice>> = repository.devices
+
+    private val _selectedDevice = MutableStateFlow<BluetoothDevice?>(null)
+    val selectedDevice: StateFlow<BluetoothDevice?> = _selectedDevice.asStateFlow()
+
+    private val _isScanning = MutableStateFlow(false)
+    val isScanning: StateFlow<Boolean> = _isScanning.asStateFlow()
+
+    init {
+        devices.onEach { deviceList ->
+            Log.d("MainViewModel", "Devices updated. Count: ${deviceList.size}")
+        }.launchIn(viewModelScope)
+    }
+
+    fun startScan() {
+        viewModelScope.launch {
+            repository.startScanning()
+            _isScanning.value = true
+        }
+    }
+
+    fun stopScan() {
+        viewModelScope.launch {
+            repository.stopScanning()
+            _isScanning.value = false
+        }
+    }
 
     fun selectDevice(device: BluetoothDevice) {
-        selectedDevice = device
+        _selectedDevice.value = device
     }
 
     fun clearSelectedDevice() {
-        selectedDevice = null
+        _selectedDevice.value = null
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopScan()
     }
 }
