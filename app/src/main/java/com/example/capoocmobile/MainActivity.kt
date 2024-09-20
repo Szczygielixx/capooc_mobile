@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.capoocmobile.view_models.MainViewModel
+import com.example.capoocmobile.views.ChartView
 import com.example.capoocmobile.views.DetailsView
 import com.example.capoocmobile.views.MainView
 
@@ -77,12 +78,16 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppNavigation(navController: NavHostController, viewModel: MainViewModel) {
-    NavHost(navController = navController, startDestination = "chooseDevice") {
+    NavHost(navController = navController, startDestination = "chart") {
         composable("chooseDevice") {
             MainView(navController, viewModel)
         }
         composable("details") {
             DetailsView(navController, viewModel)
         }
+        composable("chart") {
+            ChartView()
+        }
+
     }
 }

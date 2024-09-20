@@ -52,4 +52,3 @@ fun MainView(navController: NavController, viewModel: MainViewModel) {
         )
     }
 }
-
